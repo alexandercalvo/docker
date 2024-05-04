@@ -1,36 +1,26 @@
+
+version: '3.1'
+
 services:
-    db: 
-        container_name: dbwordpress
-        image: mariadb:10.5
-        restart: always
-        volumes:
-            - /opt/compose/data:/var/lib/mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: cvdfer34
-            MYSQL_DATABASE: bdwordpress
-            MYSQL_USER: juantrucupei
-            MYSQL_PASSWORD: cvdfer34.
-        networks:
-            - wordpress-net
-    wordpress:
-        container_name: wordpress
-        image: wordpress:latest
-        depends_on:
-            - db
-        volumes:
-            - /opt/compose/wordpress:/var/www/html
-	    - /opt/compose/php/php.conf.ini:/usr/local/etc/php/conf.d/php.ini
-        environment:
-            WORDPRESS_DB_NAME: bdwordpress
-            WORDPRESS_DB_USER: juantrucupei
-            WORDPRESS_DB_PASSWORD: cvdfer34
-            - WORDPRESS_DB_HOST: db
-        ports:
-            - 82:80
-        networks:
-            - wordpress-net
-        links:
-            - db
-networks:
-    wordpress-net:
-        driver:bridge
+
+  wordpress:
+    image: wordpress:php7.1-apache
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
+      WORDPRESS_DB_NAME: wordpress
+    links:
+      - mysql:mysql
+
+
+  mysql:
+    image: mysql:8.0.13
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ~/docker/mysql-data:/var/lib/mysql
